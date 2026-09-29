@@ -48,7 +48,7 @@ ul {
 
 /* ---------- Stage ---------- */
 .scroll-track {
-  height: 200vh;
+  height: 320vh;
   position: relative;
 }
 .hero {
@@ -638,8 +638,8 @@ ul {
 
 /* ---------- Header ---------- */
 .nav {
-  position: absolute;
-  z-index: 20;
+  position: fixed;
+  z-index: 50;
   top: 0;
   left: 0;
   right: 0;
@@ -649,6 +649,15 @@ ul {
   align-items: center;
   justify-content: space-between;
   padding: 0 7.1vw 0 8vw;
+  transition: height 0.5s var(--ease-out), background-color 0.5s ease, box-shadow 0.5s ease, backdrop-filter 0.5s ease;
+}
+/* once the page scrolls past the hero the fixed header turns to frosted glass */
+.nav.is-scrolled {
+  height: 72px;
+  background: rgba(246, 242, 237, 0.78);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+          backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow: 0 1px 0 rgba(14, 13, 12, 0.07);
 }
 .brand,
 .nav__links li,
@@ -692,7 +701,7 @@ ul {
   left: 50.3%;
   translate: -50% 0;
   display: flex;
-  gap: 3.6vw;
+  gap: 2.6vw;
   font-size: 15px;
 }
 .nav__links li:nth-child(1) {
@@ -706,6 +715,12 @@ ul {
 }
 .nav__links li:nth-child(4) {
   transition-delay: 1.21s;
+}
+.nav__links li:nth-child(5) {
+  transition-delay: 1.28s;
+}
+.nav__links li:nth-child(6) {
+  transition-delay: 1.35s;
 }
 .nav__links a {
   display: block;

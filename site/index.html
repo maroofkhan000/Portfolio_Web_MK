@@ -4,14 +4,45 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Maroof Khan</title>
-  <meta name="description" content="Maroof Khan — personal portfolio.">
+  <meta name="description" content="Maroof Khan — web application penetration tester and full-stack developer from Lucknow, India.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="assets/person.webp">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="icons.css">
+  <link rel="stylesheet" href="sections.css">
 </head>
 <body>
+
+  <!-- Header -->
+  <header class="nav">
+    <a class="brand" href="#home" aria-label="Maroof Khan — home">
+      <svg class="brand__mark" viewBox="0 0 64 36" aria-hidden="true">
+        <path class="m" d="M2 34V2h7.2L17 20.5 24.8 2H32v32h-6.4V14.6L19.6 29h-5.2L8.4 14.6V34z"/>
+        <path class="k-stem" d="M34 2h6.4v32H34z"/>
+        <path class="k-arm" d="M40.4 19.2 54.4 2h8.2L48.6 18.6 63 34h-8.4L44.8 23.4z"/>
+      </svg>
+      <span class="brand__divider"></span>
+      <span class="brand__name">Maroof Khan</span>
+    </a>
+
+    <ul class="nav__links">
+      <li><a class="is-active" href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#security">Security</a></li>
+      <li><a href="#webdev">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li class="nav__bar" aria-hidden="true"></li>
+    </ul>
+
+    <a class="pill" href="#contact" data-magnetic>
+      <span class="pill__fill"></span>
+      <span class="pill__text">Contact Me</span>
+      <svg class="pill__arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </header>
 
   <div class="scroll-track">
     <main class="hero" id="home">
@@ -98,36 +129,213 @@
         <span class="scroll-ind__text">Scroll</span>
       </a>
 
-      <!-- Header -->
-      <header class="nav">
-        <a class="brand" href="#home" aria-label="Maroof Khan — home">
-          <svg class="brand__mark" viewBox="0 0 64 36" aria-hidden="true">
-            <path class="m" d="M2 34V2h7.2L17 20.5 24.8 2H32v32h-6.4V14.6L19.6 29h-5.2L8.4 14.6V34z"/>
-            <path class="k-stem" d="M34 2h6.4v32H34z"/>
-            <path class="k-arm" d="M40.4 19.2 54.4 2h8.2L48.6 18.6 63 34h-8.4L44.8 23.4z"/>
-          </svg>
-          <span class="brand__divider"></span>
-          <span class="brand__name">Maroof Khan</span>
-        </a>
-
-        <ul class="nav__links">
-          <li><a class="is-active" href="#home">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#projects">Projects</a></li>
-          <li><a href="#contact">Contact</a></li>
-          <li class="nav__bar" aria-hidden="true"></li>
-        </ul>
-
-        <a class="pill" href="#contact" data-magnetic>
-          <span class="pill__fill"></span>
-          <span class="pill__text">Contact Me</span>
-          <svg class="pill__arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </a>
-      </header>
 
     </main>
   </div>
 
+  <div class="portal-ring" aria-hidden="true"></div>
+
+  <div class="page">
+
+    <!-- ================= ABOUT ================= -->
+    <section class="about" id="about" data-nav="#about">
+      <div class="about__pin">
+        <div class="wrap about__grid">
+          <div class="about__text">
+            <div>
+              <p class="eyebrow"><i>—/</i> About me</p>
+              <h2 class="h2 about__title" data-split>Breaking apps to build them <em>stronger.</em></h2>
+            </div>
+            <p class="about__lede">
+              I'm Maroof Khan — a Computer Science undergrad at Integral University, Lucknow, and a web application
+              penetration tester. I find OWASP Top&nbsp;10 bugs in CTF labs and live sites, and build secure
+              full-stack apps with React, Node.js and MongoDB.
+            </p>
+          </div>
+
+          <figure class="portrait">
+            <svg class="portrait__ring" viewBox="0 0 1463 1075" preserveAspectRatio="none" aria-hidden="true">
+              <rect x="1" y="1" width="1461" height="1073" rx="40" pathLength="1"/>
+            </svg>
+            <div class="portrait__frame">
+              <img src="assets/img/main.webp" alt="Maroof Khan in a light grey suit and dark sunglasses" loading="lazy">
+            </div>
+            <span class="portrait__chip portrait__chip--a"><b>01</b> Web Pentesting</span>
+            <span class="portrait__chip portrait__chip--b"><b>02</b> Secure Full-Stack</span>
+            <figcaption class="portrait__cap">Maroof Khan — Lucknow, IN</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="wrap stats" data-stagger>
+        <div class="stat">
+          <svg class="stat__icon" viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/><path d="M22 9v6"/></svg>
+          <h3>Education</h3><p>B.Tech CSE<br>Integral University</p>
+        </div>
+        <div class="stat">
+          <svg class="stat__icon" viewBox="0 0 24 24"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></svg>
+          <h3>CGPA</h3><p><span data-count="8.5" data-decimals="1">8.5</span> / 10</p>
+        </div>
+        <div class="stat">
+          <svg class="stat__icon" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+          <h3>Location</h3><p>Lucknow,<br>Uttar Pradesh</p>
+        </div>
+        <div class="stat">
+          <svg class="stat__icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8"/></svg>
+          <h3>Focus</h3><p>Cybersecurity<br>&amp; Web Development</p>
+        </div>
+      </div>
+
+      <div class="wrap edu-block">
+        <h3 class="block-title"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/></svg>Education</h3>
+        <div id="education-list"></div>
+      </div>
+
+      <div class="wrap cert-block">
+        <h3 class="block-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5"/></svg>Certifications</h3>
+        <div class="certs" id="cert-list"></div>
+      </div>
+    </section>
+
+    <!-- marquee -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Offensive Security</span><i>✦</i><span>Web Pentesting</span><i>✦</i><span>OWASP Top 10</span><i>✦</i><span>Recon Automation</span><i>✦</i><span>Secure Development</span><i>✦</i><span>Full-Stack</span><i>✦</i>
+        <span>Offensive Security</span><i>✦</i><span>Web Pentesting</span><i>✦</i><span>OWASP Top 10</span><i>✦</i><span>Recon Automation</span><i>✦</i><span>Secure Development</span><i>✦</i><span>Full-Stack</span><i>✦</i>
+      </div>
+    </div>
+
+    <!-- ================= 01 · SECURITY ================= -->
+    <section class="security" id="security" data-nav="#security">
+      <div class="wrap sec-head">
+        <div>
+          <p class="eyebrow"><i>—/</i> 01 · Offensive Security</p>
+          <h2 class="h2" data-split>How I break in.</h2>
+        </div>
+        <p class="sec-head__lead">A methodical, four-stage approach I follow on CTF labs and authorised assessments.</p>
+      </div>
+
+      <div class="wrap steps" id="chain-steps"></div>
+
+      <div class="wrap block">
+        <div class="block__head">
+          <div>
+            <p class="eyebrow"><i>—/</i> Arsenal</p>
+            <h3 class="h3" data-split>Tools of the Trade</h3>
+          </div>
+        </div>
+        <div class="tiles" id="sec-tiles"></div>
+        <div class="matrix" id="skill-matrix"></div>
+      </div>
+
+      <div class="wrap block">
+        <div class="block__head">
+          <div>
+            <p class="eyebrow"><i>—/</i> CTF, Labs &amp; Recognition</p>
+            <h3 class="h3" data-split>Proof, not promises.</h3>
+          </div>
+        </div>
+        <div class="proof">
+          <a class="rank" href="https://tryhackme.com/p/MaroofKhan000" target="_blank" rel="noopener noreferrer" data-tilt>
+            <span class="rank__icon"></span>
+            <span class="rank__label">TryHackMe global rank</span>
+            <span class="rank__value">Top <b data-count="5">5</b>%</span>
+            <span class="rank__link">View profile <svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+          </a>
+          <div class="labs" id="labs"></div>
+          <div class="recog" id="recognition"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 02 · WEB DEVELOPMENT ================= -->
+    <section class="webdev" id="webdev" data-nav="#webdev">
+      <div class="wrap block">
+        <div class="block__head">
+          <div>
+            <p class="eyebrow"><i>—/</i> 02 · Web Development</p>
+            <h2 class="h2" data-split>Technologies I Work With</h2>
+          </div>
+          <a class="more" href="#projects">View all projects <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+        <p class="sec-head__lead sec-head__lead--wide">Secure-by-default full-stack builds — JWT auth, role-based access, validated REST APIs and hardened headers, shipped on modern JavaScript.</p>
+        <div class="tiles tiles--web" id="web-tiles"></div>
+      </div>
+    </section>
+
+    <!-- ================= PROJECTS ================= -->
+    <section class="projects" id="projects" data-nav="#projects">
+      <div class="projects__pin">
+        <div class="wrap projects__head">
+          <div>
+            <p class="eyebrow"><i>—/</i> Featured Projects</p>
+            <h2 class="h2" data-split>Things I've Built</h2>
+          </div>
+          <div class="projects__meta">
+            <span class="projects__count"><b id="proj-cur">01</b> / <span id="proj-total">07</span></span>
+            <span class="projects__bar"><i id="proj-bar"></i></span>
+          </div>
+        </div>
+        <div class="projects__viewport">
+          <div class="projects__track" id="project-track"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONTACT ================= -->
+    <section class="contact" id="contact" data-nav="#contact">
+      <div class="wrap">
+        <p class="eyebrow eyebrow--center"><i>—/</i> Contact</p>
+        <h2 class="contact__title" data-split>Let's <em>Connect</em></h2>
+        <p class="contact__lead">Available for collaborations, security consulting, or just a friendly chat.</p>
+        <a class="contact__mail" href="mailto:maroofk2108@gmail.com" data-magnetic>
+          <span>maroofk2108@gmail.com</span>
+          <svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg>
+        </a>
+        <div class="links" data-stagger>
+          <a class="link-card" href="mailto:maroofk2108@gmail.com" data-tilt>
+            <span class="link-card__icon" style="--ic:var(--ic-gmail)"></span>
+            <b>Email</b><span>maroofk2108@gmail.com</span><i class="link-card__arrow">↗</i>
+          </a>
+          <a class="link-card" href="https://github.com/maroofkhan000" target="_blank" rel="noopener noreferrer" data-tilt>
+            <span class="link-card__icon" style="--ic:var(--ic-github)"></span>
+            <b>GitHub</b><span>maroofkhan000</span><i class="link-card__arrow">↗</i>
+          </a>
+          <a class="link-card" href="https://www.linkedin.com/in/maroofkhan000/" target="_blank" rel="noopener noreferrer" data-tilt>
+            <span class="link-card__icon" style="--ic:var(--ic-linkedin)"></span>
+            <b>LinkedIn</b><span>maroofkhan000</span><i class="link-card__arrow">↗</i>
+          </a>
+          <a class="link-card" href="https://tryhackme.com/p/MaroofKhan000" target="_blank" rel="noopener noreferrer" data-tilt>
+            <span class="link-card__icon" style="--ic:var(--ic-tryhackme)"></span>
+            <b>TryHackMe</b><span>MaroofKhan000</span><i class="link-card__arrow">↗</i>
+          </a>
+        </div>
+      </div>
+
+      <footer class="footer">
+        <div class="wrap footer__row">
+          <a class="footer__brand" href="#home">
+            <svg class="brand__mark" viewBox="0 0 64 36" aria-hidden="true">
+              <path class="m" d="M2 34V2h7.2L17 20.5 24.8 2H32v32h-6.4V14.6L19.6 29h-5.2L8.4 14.6V34z"/>
+              <path class="k-stem" d="M34 2h6.4v32H34z"/>
+              <path class="k-arm" d="M40.4 19.2 54.4 2h8.2L48.6 18.6 63 34h-8.4L44.8 23.4z"/>
+            </svg>
+            <span>Maroof Khan</span>
+          </a>
+          <p>Modern web solutions &amp; advanced security research.</p>
+          <p>© <span id="year">2026</span> Maroof Khan. All rights reserved.</p>
+          <a class="footer__top" href="#home">Back to top ↑</a>
+        </div>
+      </footer>
+    </section>
+  </div>
+
+  <script src="vendor/gsap.min.js"></script>
+  <script src="vendor/ScrollTrigger.min.js"></script>
+  <script src="vendor/SplitText.min.js"></script>
+  <script src="vendor/lenis.min.js"></script>
+  <script src="data.js"></script>
   <script src="main.js"></script>
+  <script src="sections.js"></script>
 </body>
 </html>

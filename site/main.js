@@ -36,13 +36,16 @@
     });
   });
   document.querySelector('.nav__links').addEventListener('mouseleave', () => placeBar(activeLink));
+  // lets the section scroll-spy (sections.js) move the underline
+  window.setNavActive = href => {
+    const a = links.find(l => l.getAttribute('href') === href);
+    if (!a || a === activeLink) return;
+    links.forEach(l => l.classList.remove('is-active'));
+    a.classList.add('is-active');
+    activeLink = a;
+    placeBar(a);
+  };
   addEventListener('resize', () => placeBar(activeLink, true));
-
-  /* ---------- Scroll indicator ---------- */
-  document.querySelector('.scroll-ind').addEventListener('click', e => {
-    e.preventDefault();
-    scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
-  });
 
   if (reduced) return;
 
@@ -84,9 +87,13 @@
   // gentle drift on touch devices where there is no pointer hover
   const coarse = matchMedia('(hover: none)').matches;
 
+  // progress runs over the hero's own scroll track, not the whole page
+  const track = document.querySelector('.scroll-track');
+  let heroVisible = true;
   const readScroll = () => {
-    const max = document.documentElement.scrollHeight - innerHeight;
+    const max = track.offsetHeight - innerHeight;
     target.p = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+    heroVisible = scrollY < track.offsetHeight;
   };
   addEventListener('scroll', readScroll, { passive: true });
   readScroll();
@@ -102,6 +109,7 @@
     cur.mx += (target.mx - cur.mx) * 0.06;
     cur.my += (target.my - cur.my) * 0.06;
     cur.p  += (target.p  - cur.p)  * 0.09;
+    if (!heroVisible && Math.abs(target.p - cur.p) < 0.001) { requestAnimationFrame(frame); return; }
 
     const W = innerWidth, H = innerHeight;
     const p = easeInOut(cur.p);
