@@ -13,3 +13,6 @@ $RECYCLE.BIN/
 .idea/
 *.swp
 *.swo
+
+# Local bug screenshots
+errfix/
