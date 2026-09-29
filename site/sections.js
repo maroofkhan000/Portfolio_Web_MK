@@ -380,6 +380,15 @@
       scrollTrigger: {
         trigger: '.projects__pin', start: 'top top', end: () => '+=' + dist(),
         pin: true, scrub: 0.9, invalidateOnRefresh: true,
+        // settle on a card so each one stops fully in view
+        snap: {
+          snapTo: v => {
+            const d = dist() || 1;
+            const pts = cards.map(c => Math.min(1, (c.offsetLeft - cards[0].offsetLeft) / d));
+            return pts.reduce((a, b) => (Math.abs(b - v) < Math.abs(a - v) ? b : a));
+          },
+          duration: { min: 0.25, max: 0.7 }, delay: 0.08, ease: 'power2.inOut', inertia: false,
+        },
         onUpdate: s => {
           bar.style.transform = `scaleX(${s.progress})`;
           cur.textContent = String(Math.min(cards.length, Math.round(s.progress * (cards.length - 1)) + 1)).padStart(2, '0');
@@ -388,12 +397,13 @@
     });
     cards.forEach(card => {
       const im = $('.proj__media img', card);
-      if (im) gsap.fromTo(im, { xPercent: -6 }, {
-        xPercent: 6, ease: 'none',
-        scrollTrigger: { trigger: card, containerAnimation: projTween, start: 'left right', end: 'right left', scrub: true },
+      // gentle zoom-out as the card arrives (never crops the screenshot at rest)
+      if (im) gsap.fromTo(im, { scale: 1.12 }, {
+        scale: 1, ease: 'none',
+        scrollTrigger: { trigger: card, containerAnimation: projTween, start: 'left right', end: 'left 20%', scrub: true },
       });
       gsap.from(card, {
-        rotateY: -12, scale: 0.92, opacity: 0.4, transformOrigin: '0% 50%', ease: 'none',
+        rotateY: -10, scale: 0.94, opacity: 0.75, transformOrigin: '0% 50%', ease: 'none',
         scrollTrigger: { trigger: card, containerAnimation: projTween, start: 'left 100%', end: 'left 55%', scrub: true },
       });
     });
@@ -507,5 +517,16 @@
     ScrollTrigger.refresh();
   });
   addEventListener('load', () => ScrollTrigger.refresh());
+  // web fonts and late images change text/box heights after the first measure;
+  // re-measure whenever the page height actually changes so pins start in the right place
+  if (document.fonts) document.fonts.ready.then(() => ScrollTrigger.refresh());
+  let lastH = 0, reT = 0;
+  new ResizeObserver(() => {
+    const h = document.documentElement.scrollHeight;
+    if (Math.abs(h - lastH) < 2) return;
+    lastH = h;
+    clearTimeout(reT);
+    reT = setTimeout(() => ScrollTrigger.refresh(), 150);
+  }).observe($('.page'));
   syncFromDatabase();
 })();
