@@ -297,15 +297,41 @@
     });
   }
 
+  const TILE_FROM = { autoAlpha: 0, y: 40, rotateX: -55, transformOrigin: '50% 100%' };
+
   function bindTiles() {
-    const tiles = $$('.tile:not([data-bound])');
+    // security "Tools of the Trade" tiles: play once
+    const tiles = $$('#sec-tiles .tile:not([data-bound])');
     tiles.forEach(n => { n.dataset.bound = '1'; });
-    if (!tiles.length) return;
-    gsap.set(tiles, { autoAlpha: 0, y: 40, rotateX: -55, transformOrigin: '50% 100%' });
-    ScrollTrigger.batch(tiles, {
-      start: 'top 92%', once: true,
-      onEnter: batch => gsap.to(batch, { autoAlpha: 1, y: 0, rotateX: 0, duration: 1, ease: 'back.out(1.4)', stagger: 0.06, clearProps: 'transform' }),
+    if (tiles.length) {
+      gsap.set(tiles, TILE_FROM);
+      ScrollTrigger.batch(tiles, {
+        start: 'top 92%', once: true,
+        onEnter: batch => gsap.to(batch, { autoAlpha: 1, y: 0, rotateX: 0, duration: 1, ease: 'back.out(1.4)', stagger: 0.06, clearProps: 'transform' }),
+      });
+    }
+    bindWebTiles();
+  }
+
+  // "Technologies I Work With": replay the flip-up every time the grid scrolls back into view
+  let webTilesST = null;
+  function bindWebTiles() {
+    const tiles = $$('#web-tiles .tile');
+    if (!tiles.length || tiles[0].dataset.bound) return;
+    tiles.forEach(n => { n.dataset.bound = '1'; });
+    if (webTilesST) webTilesST.kill();
+    const hide = () => gsap.set(tiles, { ...TILE_FROM, overwrite: true });
+    const play = () => gsap.fromTo(tiles, TILE_FROM, {
+      autoAlpha: 1, y: 0, rotateX: 0, duration: 1.5, ease: 'back.out(1.4)', stagger: 0.06,
+      clearProps: 'transform', overwrite: true,
     });
+    hide();
+    webTilesST = ScrollTrigger.create({
+      trigger: '#web-tiles', start: 'top 92%', end: 'bottom 8%',
+      onEnter: play, onEnterBack: play,
+      onLeave: hide, onLeaveBack: hide,
+    });
+    if (webTilesST.isActive) play();
   }
 
   function countUps() {
