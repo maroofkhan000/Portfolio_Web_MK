@@ -99,14 +99,137 @@
     }));
   }
 
+  /* ---------- Tools of the Trade: arsenal cards that boot up, with a hover popup ---------- */
+  function toolIcon(t) {
+    if (t.icon === 'nmap') {
+      const ic = svgPath(EYE);
+      ic.classList.add('tool__svg');
+      return ic;
+    }
+    const ic = el('span', 'tool__glyph');
+    ic.style.setProperty('--ic', `var(--ic-${t.icon})`);
+    return ic;
+  }
+
+  function renderArsenal(list) {
+    $('#sec-tiles').replaceChildren(...list.map((t, i) => {
+      const card = el('div', 'tool',
+        el('div', 'tool__top', el('span', 'tool__idx', String(i + 1).padStart(2, '0')), el('span', 'tool__role', t.role || 'Tool')),
+        el('div', 'tool__badge', el('span', 'tool__ring'), toolIcon(t)),
+        el('h4', 'tool__name', t.name),
+        el('div', 'tool__load',
+          el('span', 'tool__bar', el('i', '')),
+          el('span', 'tool__status', el('b', 'tool__st tool__st--wait', 'Loading'), el('b', 'tool__st tool__st--ok', 'Armed'))));
+      card.style.setProperty('--c', t.color);
+      card.style.setProperty('--i', i);
+      if (/^#0{3,6}$/i.test(t.color)) card.dataset.dark = '1';
+      card.tabIndex = 0;
+      card.setAttribute('aria-label', `${t.name} — ${t.role || ''}. ${t.use || ''}`);
+      card._pop = () => popTool(t);
+      return card;
+    }));
+  }
+
+  const CAT_ICONS = {
+    Bug: 'M8 8a4 4 0 0 1 8 0v1H8zM6 10h12v4a6 6 0 0 1-12 0zM12 10v10M3 13h3M18 13h3M4 7l3 2M20 7l-3 2M4 19l3-2M20 19l-3-2',
+    ShieldCheck: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM8.5 12l2.5 2.5 4.5-5',
+    FileCode2: 'M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6M10 13l-2 2 2 2M14 13l2 2-2 2',
+    Server: 'M4 4h16v6H4zM4 14h16v6H4zM8 7h.01M8 17h.01',
+  };
+
   function renderMatrix(skills, live) {
-    const rows = skills.map(g => el('div', 'matrix__row rv',
-      el('div', 'matrix__title', g.title),
-      el('div', 'matrix__skills', (g.skills || []).map(s => el('span', '', s)))));
+    const cards = skills.map((g, i) => {
+      const list = g.skills || [];
+      const ic = svgPath(CAT_ICONS[g.iconName] || CAT_ICONS.ShieldCheck);
+      const card = el('div', 'cat rv',
+        el('div', 'cat__head', el('span', 'cat__icon', ic), el('span', 'cat__count', String(list.length).padStart(2, '0'))),
+        el('h4', 'cat__title', g.title),
+        el('div', 'cat__chips', list.map((s, k) => {
+          const c = el('span', 'cat__chip', s);
+          c.style.setProperty('--k', k);
+          c.tabIndex = 0;
+          c._pop = () => popSkill(s, g);
+          return c;
+        })),
+        el('span', 'cat__hint', matchMedia('(hover: none)').matches ? 'Tap a skill' : 'Hover a skill'));
+      card.style.setProperty('--i', i);
+      return card;
+    });
     const src = el('p', 'matrix__src' + (live ? ' is-live' : ''), el('i', ''),
       live ? 'Synced live from my portfolio database' : 'Skill matrix');
-    $('#skill-matrix').replaceChildren(...rows, src);
+    $('#skill-matrix').replaceChildren(el('div', 'cats', cards), src);
   }
+
+  /* one floating popup shared by every arsenal / skill card */
+  const pop = el('div', 'apop');
+  pop.setAttribute('role', 'tooltip');
+  document.body.append(pop);
+  let popFor = null, popHide = 0;
+
+  function popTool(t) {
+    const head = el('div', 'apop__head', el('span', 'apop__icon', toolIcon(t)),
+      el('div', '', el('b', 'apop__name', t.name), el('span', 'apop__role', t.role || 'Tool')));
+    head.style.setProperty('--c', t.color);
+    if (/^#0{3,6}$/i.test(t.color)) head.dataset.dark = '1';
+    return [head, el('p', 'apop__text', t.use || ''),
+      el('div', 'apop__chips', (t.does || []).map(d => el('span', '', d)))];
+  }
+  // just the one skill under the pointer, not the whole category
+  function popSkill(s, g) {
+    const note = (D.skillNotes || {})[norm(s)];
+    return [el('div', 'apop__head apop__head--cat', el('div', '', el('b', 'apop__name', s),
+      el('span', 'apop__role', g.title))), note ? el('p', 'apop__text', note) : null].filter(Boolean);
+  }
+
+  function placePop() {
+    if (!popFor) return;
+    const r = popFor.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight, gap = 14;
+    const above = r.top - h - gap > 70;
+    const x = Math.min(innerWidth - w - 12, Math.max(12, r.left + r.width / 2 - w / 2));
+    const y = above ? r.top - h - gap : Math.min(innerHeight - h - 12, r.bottom + gap);
+    pop.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+    pop.style.setProperty('--ax', `${(r.left + r.width / 2 - x).toFixed(1)}px`);
+    pop.classList.toggle('is-below', !above);
+    if ((r.bottom < 0 || r.top > innerHeight)) closePop();
+  }
+  function openPop(card) {
+    clearTimeout(popHide);
+    if (popFor === card) return;
+    if (popFor) popFor.classList.remove('is-popped');
+    popFor = card;
+    card.classList.add('is-popped');
+    pop.replaceChildren(...card._pop());
+    pop.classList.remove('is-open');
+    placePop();
+    void pop.offsetWidth;
+    pop.classList.add('is-open');
+  }
+  function closePop() {
+    if (!popFor) return;
+    popFor.classList.remove('is-popped');
+    popFor = null;
+    pop.classList.remove('is-open');
+  }
+  const cardOf = e => e.target.closest && e.target.closest('.tool, .cat__chip');
+  document.addEventListener('pointerover', e => { const c = cardOf(e); if (c && e.pointerType === 'mouse') openPop(c); });
+  document.addEventListener('pointerout', e => {
+    const c = cardOf(e);
+    if (c && e.pointerType === 'mouse' && !c.contains(e.relatedTarget)) popHide = setTimeout(closePop, 80);
+  });
+  // keyboard focus opens it; a tap's focus is left to the click handler so it can toggle
+  let pressAt = 0;
+  document.addEventListener('pointerdown', () => { pressAt = performance.now(); });
+  document.addEventListener('focusin', e => { const c = cardOf(e); if (c && performance.now() - pressAt > 400) openPop(c); });
+  document.addEventListener('focusout', e => { if (cardOf(e)) popHide = setTimeout(closePop, 80); });
+  // touch: tap a card to open, tap anywhere else to close
+  document.addEventListener('click', e => {
+    const c = cardOf(e);
+    if (c) { if (popFor === c && matchMedia('(hover: none)').matches) closePop(); else openPop(c); }
+    else closePop();
+  });
+  addEventListener('scroll', placePop, { passive: true });
+  addEventListener('resize', placePop);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closePop(); });
 
   /* ---------- CTF labs + recognition ---------- */
   function renderLabs(ctf) {
@@ -150,7 +273,7 @@
     renderEducation(D.education);
     renderCerts(D.certificates);
     renderSteps(D.methodology);
-    renderTiles('#sec-tiles', D.securityTools);
+    renderArsenal(D.securityTools);
     renderTiles('#web-tiles', D.webStack);
     renderMatrix(D.skills, live);
     renderLabs(D.ctf);
@@ -248,6 +371,7 @@
     gsap.ticker.add(t => lenis.raf(t * 1000));
     gsap.ticker.lagSmoothing(0);
   }
+  let gliding = false;
   // in-page links glide instead of jumping
   document.addEventListener('click', e => {
     const a = e.target.closest('a[href^="#"]');
@@ -256,8 +380,10 @@
     const target = id === '#home' ? 0 : $(id);
     if (target === null) return;
     e.preventDefault();
-    if (lenis) lenis.scrollTo(target, { offset: 0, duration: 1.6 });
-    else (target === 0 ? scrollTo({ top: 0, behavior: 'smooth' }) : target.scrollIntoView({ behavior: 'smooth' }));
+    if (lenis) {
+      gliding = true;
+      lenis.scrollTo(target, { offset: 0, duration: 1.6, onComplete: () => { gliding = false; } });
+    } else (target === 0 ? scrollTo({ top: 0, behavior: 'smooth' }) : target.scrollIntoView({ behavior: 'smooth' }));
   });
 
   /* ---------- nav spy: last section whose top has crossed 45% of the viewport ---------- */
@@ -300,16 +426,31 @@
   const TILE_FROM = { autoAlpha: 0, y: 40, rotateX: -55, transformOrigin: '50% 100%' };
 
   function bindTiles() {
-    // security "Tools of the Trade" tiles: play once
-    const tiles = $$('#sec-tiles .tile:not([data-bound])');
-    tiles.forEach(n => { n.dataset.bound = '1'; });
-    if (tiles.length) {
-      gsap.set(tiles, TILE_FROM);
-      ScrollTrigger.batch(tiles, {
-        start: 'top 92%', once: true,
-        onEnter: batch => gsap.to(batch, { autoAlpha: 1, y: 0, rotateX: 0, duration: 1, ease: 'back.out(1.4)', stagger: 0.06, clearProps: 'transform' }),
+    // "Tools of the Trade": cards deal in, then each one boots (bar loads, status flips to Armed)
+    const grid = $('#sec-tiles');
+    const tools = $$('#sec-tiles .tool:not([data-bound])');
+    tools.forEach(n => { n.dataset.bound = '1'; });
+    if (tools.length) {
+      grid.classList.add('is-wait');
+      grid.classList.remove('is-on');
+      gsap.set(tools, { autoAlpha: 0, y: 50, rotateX: -60, scale: .92, transformOrigin: '50% 100%' });
+      ScrollTrigger.create({
+        trigger: grid, start: 'top 88%', once: true,
+        onEnter: () => {
+          gsap.to(tools, {
+            autoAlpha: 1, y: 0, rotateX: 0, scale: 1, duration: 1.1, ease: 'back.out(1.5)',
+            stagger: { each: 0.07, grid: 'auto', from: 'start' }, clearProps: 'transform,opacity,visibility',
+          });
+          grid.classList.add('is-on');
+        },
       });
     }
+    // skill cards: chips type in one after another once the card is on screen
+    $$('#skill-matrix .cats:not([data-bound])').forEach(cats => {
+      cats.dataset.bound = '1';
+      cats.classList.add('is-wait');
+      ScrollTrigger.create({ trigger: cats, start: 'top 85%', once: true, onEnter: () => cats.classList.add('is-on') });
+    });
     bindWebTiles();
   }
 
@@ -463,34 +604,51 @@
     });
   }
 
-  /* ---------- transition 1: hero -> about, a portal opening through the ring ---------- */
+  /* ---------- transition 1: hero -> about, blur closes in from the sides, then about surfaces ---------- */
   function portal() {
-    const page = $('.page'), ringEl = $('.portal-ring');
+    const page = $('.page'), hero = $('.hero');
+    const [left, right] = $$('.portal-blur__side');
     const ease = t => t * t * (3 - 2 * t);
+    const seg = (t, a, b) => ease(Math.min(1, Math.max(0, (t - a) / (b - a))));
     const apply = t => {
-      const W = innerWidth, H = innerHeight, cy = H * 0.493;
-      if (t <= 0) {
-        page.style.clipPath = 'circle(0px at 50% 0px)';
-        page.style.transform = '';
-        ringEl.style.opacity = 0;
+      if (t <= 0 || t >= 1) {
+        page.style.transform = page.style.opacity = page.style.filter = hero.style.filter = '';
+        left.style.transform = 'translate3d(-100%, 0, 0)';
+        right.style.transform = 'translate3d(100%, 0, 0)';
+        left.style.opacity = right.style.opacity = 0;
         return;
       }
-      if (t >= 1) {
-        page.style.clipPath = '';
-        page.style.transform = '';
-        ringEl.style.opacity = 0;
-        return;
-      }
-      // hold the page still while the portal opens, so it reads as an iris
-      const naturalTop = H * (1 - t);
-      page.style.transform = `translate3d(0, ${-naturalTop}px, 0)`;
-      const maxR = Math.hypot(W / 2, Math.max(cy, H - cy)) + 40;
-      const r = Math.max(0, ease(t) * maxR);
-      page.style.clipPath = `circle(${r.toFixed(1)}px at 50% ${cy.toFixed(1)}px)`;
-      ringEl.style.width = ringEl.style.height = (r * 2).toFixed(1) + 'px';
-      ringEl.style.opacity = String(Math.min(1, t * 6) * (1 - ease(Math.max(0, (t - 0.75) / 0.25))));
+      // hold the page still under the blur so it surfaces in place
+      page.style.transform = `translate3d(0, ${-innerHeight * (1 - t)}px, 0)`;
+      // 0 -> .55: the blur slides in from both edges until it meets over the photo
+      const close = seg(t, 0, 0.55);
+      left.style.transform = `translate3d(${(-100 + close * 100).toFixed(2)}%, 0, 0)`;
+      right.style.transform = `translate3d(${(100 - close * 100).toFixed(2)}%, 0, 0)`;
+      // the photo itself only goes soft once the fog has reached it
+      const soften = seg(t, 0.2, 0.6);
+      hero.style.filter = soften > 0 ? `blur(${(soften * 16).toFixed(1)}px)` : '';
+      // .5 -> 1: about sharpens out of the blur while the blur clears away
+      const show = seg(t, 0.5, 1);
+      page.style.opacity = show.toFixed(3);
+      page.style.filter = show < 1 ? `blur(${((1 - show) * 18).toFixed(1)}px)` : '';
+      left.style.opacity = right.style.opacity = (1 - seg(t, 0.75, 1)).toFixed(3);
     };
     apply(0);
+    // large screens: rest on the fully zoomed hero for .8s before the blur starts closing in
+    const big = matchMedia('(min-width: 1024px)');
+    // fires once per pass; re-arms only after scrolling back above the hold point
+    let armed = true;
+    ScrollTrigger.create({
+      trigger: page, start: 'top bottom',
+      onEnter: s => {
+        if (!armed || !lenis || gliding || !big.matches) return;
+        armed = false;
+        lenis.stop();
+        lenis.scrollTo(s.start + 1, { immediate: true, force: true });
+        setTimeout(() => lenis.start(), 800);
+      },
+      onLeaveBack: () => { armed = true; },
+    });
     ScrollTrigger.create({
       trigger: page, start: 'top bottom', end: 'top top', scrub: true,
       onUpdate: s => apply(s.progress),
