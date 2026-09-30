@@ -92,7 +92,9 @@
   let heroVisible = true;
   const readScroll = () => {
     const max = track.offsetHeight - innerHeight;
-    target.p = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+    // hold the wide shot for the first 80vh of scroll before the camera starts moving
+    const hold = innerHeight * 0.8;
+    target.p = max > hold ? Math.min(1, Math.max(0, (scrollY - hold) / (max - hold))) : 0;
     heroVisible = scrollY < track.offsetHeight;
   };
   addEventListener('scroll', readScroll, { passive: true });
